@@ -7,7 +7,7 @@ mkdir -p "$TARGET_DIR"
 # Tools whose `skill --install <dir>` creates `<dir>/<tool>/SKILL.md`
 NESTED_TOOLS=(dapkeel statkeel mapkeel pgkeel litekeel)
 # Tools whose `skill --install <dir>` writes `<dir>/SKILL.md` directly
-DIRECT_TOOLS=(fetchkeel datakeel loadkeel sqlkeel runkeel maskkeel)
+DIRECT_TOOLS=(fetchkeel datakeel loadkeel sqlkeel runkeel maskkeel sheetkeel)
 
 installed=0
 skipped=0

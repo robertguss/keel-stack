@@ -3,7 +3,7 @@
 [![CI](https://github.com/robertguss/keel-stack/actions/workflows/ci.yml/badge.svg)](https://github.com/robertguss/keel-stack/actions/workflows/ci.yml)
 [![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](#license)
 
-**An 11-tool suite of single-binary, blazing-fast Rust CLIs for modern data engineering, analytics trust, FERPA/PII scrubbing, and local-first SQLite/PostgreSQL workflows — designed from day one for both Humans (DX) and AI Agents (AX).**
+**A 12-tool suite of single-binary, blazing-fast Rust CLIs for modern data engineering, analytics trust, FERPA/PII scrubbing, Excel/spreadsheet workflows, and local-first SQLite/PostgreSQL pipelines — designed from day one for both Humans (DX) and AI Agents (AX).**
 
 Zero JVM. Zero Common Lisp. Zero bloated Python ETL dependency trees. Every tool ships as a native binary (plus prebuilt cross-platform Python wheels on GitHub Releases) with identical ergonomics, exit codes, and a bundled `SKILL.md`.
 
@@ -16,13 +16,14 @@ flowchart LR
     subgraph Sources
         API["REST APIs"]
         DAP["Canvas Data 2 (DAP)"]
-        FILES["CSV / JSONL / Parquet"]
+        FILES["CSV / JSONL / Parquet / Excel"]
         LEGACY["SQLite / MySQL"]
     end
 
-    subgraph Ingest["Ingest & Migrate"]
+    subgraph Ingest["Ingest, Spreadsheets & Migrate"]
         FK["fetchkeel"]
         DKP["dapkeel"]
+        SHK["sheetkeel"]
         LK["loadkeel"]
         PGK["pgkeel"]
         LTK["litekeel"]
@@ -61,7 +62,7 @@ flowchart LR
 
 ---
 
-## The 11 Tools
+## The 12 Tools
 
 | # | Tool | Replaces / Role | Key Commands | Repository |
 |---:|---|---|---|---|
@@ -75,7 +76,8 @@ flowchart LR
 | 8 | **`mapkeel`** | `SchemaSpy` — zero-Java/Graphviz SVG & Mermaid ER + implicit FKs + schema diff | `map`, `edges`, `diff`, `init-contracts` | [robertguss/mapkeel](https://github.com/robertguss/mapkeel) |
 | 9 | **`pgkeel`** | `pgloader` — zero-Lisp SQLite/MySQL/CSV/JSONL/Parquet → Postgres migrator | `plan`, `migrate`, `verify` | [robertguss/pgkeel](https://github.com/robertguss/pgkeel) |
 | 10 | **`litekeel`** | `sqlite-utils` — SQLite ingest, `--alter`, `--flatten`, FTS5 BM25, `extract`, `transform` | `insert`, `upsert`, `enable-fts`, `search`, `extract`, `transform` | [robertguss/litekeel](https://github.com/robertguss/litekeel) |
-| 11 | **`maskkeel`** | Deterministic, referentially-intact FERPA/PII scrubber (HMAC-SHA256, leading-zero & INT/TEXT join safe) | `scan`, `mask`, `verify` | [robertguss/maskkeel](https://github.com/robertguss/maskkeel) |
+| 11 | **`maskkeel`** | Deterministic, referentially-intact FERPA/PII scrubber (HMAC-SHA256, `text_redact`/JSONB, FK-coherent subsetting, Parquet, HTML receipts) | `scan`, `mask`, `verify` | [robertguss/maskkeel](https://github.com/robertguss/maskkeel) |
+| 12 | **`sheetkeel`** | Rust Excel (`.xlsx`/`.xls`/`.xlsb`/`.ods`) Swiss-army CLI: inspect, `--unmerge`, export to CSV/JSONL/Parquet/SQLite, pack & diff | `inspect`, `export`, `pack`, `diff` | [robertguss/sheetkeel](https://github.com/robertguss/sheetkeel) |
 
 ---
 
@@ -94,7 +96,7 @@ Every tool in the Keel Data Stack follows the same predictable contract:
 
 ## Quick Install
 
-### Install all 11 tools from GitHub Releases (prebuilt wheels via `uv` — no Rust compiler needed)
+### Install all 12 tools from GitHub Releases (prebuilt wheels via `uv` — no Rust compiler needed)
 ```bash
 git clone https://github.com/robertguss/keel-stack
 cd keel-stack
@@ -108,11 +110,11 @@ cd keel-stack
 
 ### Install a subset or verify your installation
 ```bash
-./scripts/install.sh --method cargo --tools statkeel,mapkeel,maskkeel,pgkeel,litekeel
+./scripts/install.sh --method cargo --tools statkeel,mapkeel,maskkeel,sheetkeel,pgkeel,litekeel
 ./scripts/install.sh --doctor
 ```
 
-### Install all 11 AI Agent `SKILL.md` files into any repo
+### Install all 12 AI Agent `SKILL.md` files into any repo
 ```bash
 ./scripts/install-skills.sh /path/to/your-repo/.agents/skills
 ```
