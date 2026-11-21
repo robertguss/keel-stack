@@ -1,0 +1,167 @@
+# ⚓ Keel Data Stack
+
+[![CI](https://github.com/robertguss/keel-stack/actions/workflows/ci.yml/badge.svg)](https://github.com/robertguss/keel-stack/actions/workflows/ci.yml)
+[![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](#license)
+
+**A 10-tool suite of single-binary, blazing-fast Rust CLIs for modern data engineering, analytics trust, and local-first SQLite/PostgreSQL workflows — designed from day one for both Humans (DX) and AI Agents (AX).**
+
+Zero JVM. Zero Common Lisp. Zero bloated Python ETL dependency trees. Every tool ships as a native binary (plus prebuilt cross-platform Python wheels on GitHub Releases) with identical ergonomics, exit codes, and a bundled `SKILL.md`.
+
+---
+
+## Architecture Overview
+
+```mermaid
+flowchart LR
+    subgraph Sources
+        API["REST APIs"]
+        DAP["Canvas Data 2 (DAP)"]
+        FILES["CSV / JSONL / Parquet"]
+        LEGACY["SQLite / MySQL"]
+    end
+
+    subgraph Ingest["Ingest & Migrate"]
+        FK["fetchkeel"]
+        DKP["dapkeel"]
+        LK["loadkeel"]
+        PGK["pgkeel"]
+        LTK["litekeel"]
+    end
+
+    subgraph Storage["Databases"]
+        PG[("PostgreSQL")]
+        SQ[("SQLite + FTS5")]
+    end
+
+    subgraph Quality["Contracts, Lineage & Trust"]
+        DTK["datakeel"]
+        SQK["sqlkeel"]
+        MK["mapkeel"]
+        STK["statkeel"]
+    end
+
+    RK["runkeel (Parallel DAG Runner)"]
+
+    API --> FK --> DTK --> LK --> PG
+    DAP --> DKP --> PG
+    FILES --> DTK
+    FILES --> LTK --> SQ
+    LEGACY --> PGK --> PG
+    PG --> MK
+    PG --> STK
+    SQ --> MK
+    SQ --> STK
+    SQK -.-> PG
+    RK -.-> Ingest
+    RK -.-> Quality
+```
+
+---
+
+## The 10 Tools
+
+| # | Tool | Replaces / Role | Key Commands | Repository |
+|---:|---|---|---|---|
+| 1 | **`runkeel`** | Zero-daemon parallel DAG pipeline runner | `run`, `plan --mermaid`, `history` | [robertguss/runkeel](https://github.com/robertguss/runkeel) |
+| 2 | **`fetchkeel`** | Declarative REST API pagination extractor → JSONL | `fetch`, `plan`, `watermark` | [robertguss/fetchkeel](https://github.com/robertguss/fetchkeel) |
+| 3 | **`dapkeel`** | Instructure Canvas Data 2 (`dap`) Rust CLI | `list`, `schema --to-contract odcs`, `initdb`, `syncdb` | [robertguss/dapkeel](https://github.com/robertguss/dapkeel) |
+| 4 | **`datakeel`** | `datacontract-cli` — ODCS v3.2.0 contracts, validation, quarantine, codegen | `infer`, `check`, `diff`, `lint`, `codegen` | [robertguss/datakeel](https://github.com/robertguss/datakeel) |
+| 5 | **`loadkeel`** | `pandas.to_sql` / ETL loaders — JSONL/CSV/Parquet → Postgres `COPY` + upsert | `load`, `plan`, `--evolve` | [robertguss/loadkeel](https://github.com/robertguss/loadkeel) |
+| 6 | **`sqlkeel`** | Static Postgres SQL semantic bugs, lock safety, dbt/Jinja, column lineage | `check`, `lineage`, `schema` | [robertguss/sqlkeel](https://github.com/robertguss/sqlkeel) |
+| 7 | **`statkeel`** | `ydata-profiling` HTML/agent EDA + join health + live SQL trust auditor + drift diff | `profile`, `join`, `audit`, `compare` | [robertguss/statkeel](https://github.com/robertguss/statkeel) |
+| 8 | **`mapkeel`** | `SchemaSpy` — zero-Java/Graphviz SVG & Mermaid ER + implicit FKs + schema diff | `map`, `edges`, `diff`, `init-contracts` | [robertguss/mapkeel](https://github.com/robertguss/mapkeel) |
+| 9 | **`pgkeel`** | `pgloader` — zero-Lisp SQLite/MySQL/CSV/JSONL/Parquet → Postgres migrator | `plan`, `migrate`, `verify` | [robertguss/pgkeel](https://github.com/robertguss/pgkeel) |
+| 10 | **`litekeel`** | `sqlite-utils` — SQLite ingest, `--alter`, `--flatten`, FTS5 BM25, `extract`, `transform` | `insert`, `upsert`, `enable-fts`, `search`, `extract`, `transform` | [robertguss/litekeel](https://github.com/robertguss/litekeel) |
+
+---
+
+## Shared DX + AX Contract
+
+Every tool in the Keel Data Stack follows the same predictable contract:
+
+1. **Dual-mode output (`--format auto|human|agent|json`):** Rich colorized tables on a TTY; clean, zero-ANSI, token-budgeted structured output when piped or called by an AI agent.
+2. **Strict `stdout` / `stderr` separation:** `stdout` is pure data payloads; `stderr` carries progress and file-write notices only.
+3. **Actionable error envelopes:** Stable error codes (`E_*`), concise failure counts, bounded sample rows, `fix_hint`, and `retryable` flags.
+4. **Zero interactivity:** Never hangs on `[y/N]` prompts.
+5. **Clean exit codes:** `0` = pass/clean · `1` = data/quality/audit/drift failure · `2` = I/O, connection, parse, or config error.
+6. **Bundled `SKILL.md` (`<tool> skill`):** Every binary ships its own up-to-date agent skill ready for `.agents/skills/` (Claude Code, Codex, Cursor, Antigravity).
+
+---
+
+## Quick Install
+
+### Install all 10 tools from GitHub Releases (prebuilt wheels via `uv` — no Rust compiler needed)
+```bash
+git clone https://github.com/robertguss/keel-stack
+cd keel-stack
+./scripts/install.sh --method wheel
+```
+
+### Or install from source with Cargo
+```bash
+./scripts/install.sh --method cargo
+```
+
+### Install a subset or verify your installation
+```bash
+./scripts/install.sh --method cargo --tools statkeel,mapkeel,pgkeel,litekeel
+./scripts/install.sh --doctor
+```
+
+### Install all 10 AI Agent `SKILL.md` files into any repo
+```bash
+./scripts/install-skills.sh /path/to/your-repo/.agents/skills
+```
+
+---
+
+## Playbooks
+
+### 1. Proof-Carrying AI Data Analysis (`mapkeel` + `statkeel`)
+Give AI agents (and software engineers) compiler-like confidence on cross-source SQL:
+```bash
+# Orient on all schemas + discover implicit cross-schema joins
+mapkeel map "$DATABASE_URL" --schema populi,canvas --format agent
+
+# Profile an unfamiliar table (catches NEAR_UNIQUE_KEY fan-out traps & PII)
+statkeel profile "${DATABASE_URL}#canvas.pseudonyms" --html profile.html
+
+# Check cross-source join cardinality, orphans & key normalization fixes
+statkeel join "${DATABASE_URL}#populi.students" "${DATABASE_URL}#canvas.pseudonyms" \
+  --left-key person_id --right-key sis_user_id
+
+# Audit any AI-written SQL query before trusting its numbers (strictly read-only!)
+statkeel audit query.sql --db "$DATABASE_URL" --rules rules.toml --html trust-receipt.html
+
+# Prove a refactored query returns identical rows
+statkeel compare --db "$DATABASE_URL" \
+  --baseline-query old.sql --candidate-query new.sql \
+  --key person_id --fail-on-row-diff
+```
+
+### 2. Zero-Python Declarative Postgres Data Lake (`fetchkeel` + `dapkeel` + `datakeel` + `loadkeel` + `sqlkeel` + `runkeel`)
+- Extract REST APIs (`fetchkeel`) and Canvas Data 2 (`dapkeel`)
+- Validate & quarantine bad rows against ODCS v3.2.0 / TOML contracts (`datakeel`)
+- Stream into Postgres via binary/CSV `COPY` + atomic `ON CONFLICT` upserts (`loadkeel`)
+- Gate SQL views & column blast radius in CI (`sqlkeel`)
+- Orchestrate parallel waves with retries and JSON audit logs (`runkeel`)
+
+### 3. Zero-Lisp Database Migration to PostgreSQL (`pgkeel`)
+```bash
+pgkeel plan mysql://user:pass@host:3306/app --target-schema app --emit-sql migration.sql
+pgkeel migrate mysql://user:pass@host:3306/app "$DATABASE_URL" --target-schema app --workers 4
+pgkeel verify mysql://user:pass@host:3306/app "$DATABASE_URL" --target-schema app
+```
+
+### 4. Local-First Searchable SQLite & FTS5 Workbench (`litekeel`)
+```bash
+litekeel insert notes.db articles articles.jsonl --pk id --flatten --alter
+litekeel enable-fts notes.db articles title body --tokenize porter --create-triggers
+litekeel search notes.db articles "reformed covenant" --format jsonl
+```
+
+---
+
+## License
+
+Dual-licensed under [MIT](LICENSE-MIT) or [Apache-2.0](LICENSE-APACHE), at your option.
