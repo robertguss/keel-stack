@@ -5,7 +5,7 @@ TARGET_DIR="${1:-.agents/skills}"
 mkdir -p "$TARGET_DIR"
 
 # Tools whose `skill --install <dir>` creates `<dir>/<tool>/SKILL.md`
-NESTED_TOOLS=(dapkeel statkeel mapkeel pgkeel litekeel)
+NESTED_TOOLS=(dapkeel statkeel mapkeel pgkeel litekeel auditkeel)
 # Tools whose `skill --install <dir>` writes `<dir>/SKILL.md` directly
 DIRECT_TOOLS=(fetchkeel datakeel loadkeel sqlkeel runkeel maskkeel sheetkeel)
 

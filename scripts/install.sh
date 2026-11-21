@@ -14,6 +14,7 @@ ALL_TOOLS=(
   litekeel
   maskkeel
   sheetkeel
+  auditkeel
 )
 
 METHOD="cargo"

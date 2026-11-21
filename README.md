@@ -3,7 +3,7 @@
 [![CI](https://github.com/robertguss/keel-stack/actions/workflows/ci.yml/badge.svg)](https://github.com/robertguss/keel-stack/actions/workflows/ci.yml)
 [![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](#license)
 
-**A 12-tool suite of single-binary, blazing-fast Rust CLIs for modern data engineering, analytics trust, FERPA/PII scrubbing, Excel/spreadsheet workflows, and local-first SQLite/PostgreSQL pipelines — designed from day one for both Humans (DX) and AI Agents (AX).**
+**A 13-tool suite of single-binary, blazing-fast Rust CLIs for modern data engineering, proof-carrying SQL auditing, analytics trust, FERPA/PII scrubbing, Excel/spreadsheet workflows, and local-first SQLite/PostgreSQL pipelines — designed from day one for both Humans (DX) and AI Agents (AX).**
 
 Zero JVM. Zero Common Lisp. Zero bloated Python ETL dependency trees. Every tool ships as a native binary (plus prebuilt cross-platform Python wheels on GitHub Releases) with identical ergonomics, exit codes, and a bundled `SKILL.md`.
 
@@ -37,6 +37,7 @@ flowchart LR
     subgraph Quality["Contracts, Lineage, Trust & Privacy"]
         DTK["datakeel"]
         SQK["sqlkeel"]
+        ADK["auditkeel"]
         MK["mapkeel"]
         STK["statkeel"]
         MSK["maskkeel"]
@@ -62,7 +63,7 @@ flowchart LR
 
 ---
 
-## The 12 Tools
+## The 13 Tools
 
 | # | Tool | Replaces / Role | Key Commands | Repository |
 |---:|---|---|---|---|
@@ -78,6 +79,7 @@ flowchart LR
 | 10 | **`litekeel`** | `sqlite-utils` — SQLite ingest, `--alter`, `--flatten`, FTS5 BM25, `extract`, `transform` | `insert`, `upsert`, `enable-fts`, `search`, `extract`, `transform` | [robertguss/litekeel](https://github.com/robertguss/litekeel) |
 | 11 | **`maskkeel`** | Deterministic, referentially-intact FERPA/PII scrubber (HMAC-SHA256, `text_redact`/JSONB, FK-coherent subsetting, Parquet, HTML receipts) | `scan`, `mask`, `verify` | [robertguss/maskkeel](https://github.com/robertguss/maskkeel) |
 | 12 | **`sheetkeel`** | Rust Excel (`.xlsx`/`.xls`/`.xlsb`/`.ods`) Swiss-army CLI: inspect, `--unmerge`, export to CSV/JSONL/Parquet/SQLite, pack & diff | `inspect`, `export`, `pack`, `diff` | [robertguss/sheetkeel](https://github.com/robertguss/sheetkeel) |
+| 13 | **`auditkeel`** | Proof-Carrying SQL Analysis Auditor: read-only Postgres CTE row waterfalls, join fan-out/coverage probes, grain spot-checks, live A/B query diff & HTML receipts | `run`, `check`, `diff`, `skill` | [robertguss/auditkeel](https://github.com/robertguss/auditkeel) |
 
 ---
 
