@@ -3,7 +3,7 @@
 [![CI](https://github.com/robertguss/keel-stack/actions/workflows/ci.yml/badge.svg)](https://github.com/robertguss/keel-stack/actions/workflows/ci.yml)
 [![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](#license)
 
-**A 10-tool suite of single-binary, blazing-fast Rust CLIs for modern data engineering, analytics trust, and local-first SQLite/PostgreSQL workflows — designed from day one for both Humans (DX) and AI Agents (AX).**
+**An 11-tool suite of single-binary, blazing-fast Rust CLIs for modern data engineering, analytics trust, FERPA/PII scrubbing, and local-first SQLite/PostgreSQL workflows — designed from day one for both Humans (DX) and AI Agents (AX).**
 
 Zero JVM. Zero Common Lisp. Zero bloated Python ETL dependency trees. Every tool ships as a native binary (plus prebuilt cross-platform Python wheels on GitHub Releases) with identical ergonomics, exit codes, and a bundled `SKILL.md`.
 
@@ -33,11 +33,12 @@ flowchart LR
         SQ[("SQLite + FTS5")]
     end
 
-    subgraph Quality["Contracts, Lineage & Trust"]
+    subgraph Quality["Contracts, Lineage, Trust & Privacy"]
         DTK["datakeel"]
         SQK["sqlkeel"]
         MK["mapkeel"]
         STK["statkeel"]
+        MSK["maskkeel"]
     end
 
     RK["runkeel (Parallel DAG Runner)"]
@@ -49,8 +50,10 @@ flowchart LR
     LEGACY --> PGK --> PG
     PG --> MK
     PG --> STK
+    PG --> MSK
     SQ --> MK
     SQ --> STK
+    SQ --> MSK
     SQK -.-> PG
     RK -.-> Ingest
     RK -.-> Quality
@@ -58,7 +61,7 @@ flowchart LR
 
 ---
 
-## The 10 Tools
+## The 11 Tools
 
 | # | Tool | Replaces / Role | Key Commands | Repository |
 |---:|---|---|---|---|
@@ -68,10 +71,11 @@ flowchart LR
 | 4 | **`datakeel`** | `datacontract-cli` — ODCS v3.2.0 contracts, validation, quarantine, codegen | `infer`, `check`, `diff`, `lint`, `codegen` | [robertguss/datakeel](https://github.com/robertguss/datakeel) |
 | 5 | **`loadkeel`** | `pandas.to_sql` / ETL loaders — JSONL/CSV/Parquet → Postgres `COPY` + upsert | `load`, `plan`, `--evolve` | [robertguss/loadkeel](https://github.com/robertguss/loadkeel) |
 | 6 | **`sqlkeel`** | Static Postgres SQL semantic bugs, lock safety, dbt/Jinja, column lineage | `check`, `lineage`, `schema` | [robertguss/sqlkeel](https://github.com/robertguss/sqlkeel) |
-| 7 | **`statkeel`** | `ydata-profiling` HTML/agent EDA + join health + live SQL trust auditor + drift diff | `profile`, `join`, `audit`, `compare` | [robertguss/statkeel](https://github.com/robertguss/statkeel) |
+| 7 | **`statkeel`** | `ydata-profiling` HTML/agent EDA + join health + live SQL trust auditor (`--assert`, `--trace-key`) + drift diff | `profile`, `join`, `audit`, `compare` | [robertguss/statkeel](https://github.com/robertguss/statkeel) |
 | 8 | **`mapkeel`** | `SchemaSpy` — zero-Java/Graphviz SVG & Mermaid ER + implicit FKs + schema diff | `map`, `edges`, `diff`, `init-contracts` | [robertguss/mapkeel](https://github.com/robertguss/mapkeel) |
 | 9 | **`pgkeel`** | `pgloader` — zero-Lisp SQLite/MySQL/CSV/JSONL/Parquet → Postgres migrator | `plan`, `migrate`, `verify` | [robertguss/pgkeel](https://github.com/robertguss/pgkeel) |
 | 10 | **`litekeel`** | `sqlite-utils` — SQLite ingest, `--alter`, `--flatten`, FTS5 BM25, `extract`, `transform` | `insert`, `upsert`, `enable-fts`, `search`, `extract`, `transform` | [robertguss/litekeel](https://github.com/robertguss/litekeel) |
+| 11 | **`maskkeel`** | Deterministic, referentially-intact FERPA/PII scrubber (HMAC-SHA256, leading-zero & INT/TEXT join safe) | `scan`, `mask`, `verify` | [robertguss/maskkeel](https://github.com/robertguss/maskkeel) |
 
 ---
 
@@ -90,7 +94,7 @@ Every tool in the Keel Data Stack follows the same predictable contract:
 
 ## Quick Install
 
-### Install all 10 tools from GitHub Releases (prebuilt wheels via `uv` — no Rust compiler needed)
+### Install all 11 tools from GitHub Releases (prebuilt wheels via `uv` — no Rust compiler needed)
 ```bash
 git clone https://github.com/robertguss/keel-stack
 cd keel-stack
@@ -104,11 +108,11 @@ cd keel-stack
 
 ### Install a subset or verify your installation
 ```bash
-./scripts/install.sh --method cargo --tools statkeel,mapkeel,pgkeel,litekeel
+./scripts/install.sh --method cargo --tools statkeel,mapkeel,maskkeel,pgkeel,litekeel
 ./scripts/install.sh --doctor
 ```
 
-### Install all 10 AI Agent `SKILL.md` files into any repo
+### Install all 11 AI Agent `SKILL.md` files into any repo
 ```bash
 ./scripts/install-skills.sh /path/to/your-repo/.agents/skills
 ```
@@ -158,6 +162,14 @@ pgkeel verify mysql://user:pass@host:3306/app "$DATABASE_URL" --target-schema ap
 litekeel insert notes.db articles articles.jsonl --pk id --flatten --alter
 litekeel enable-fts notes.db articles title body --tokenize porter --create-triggers
 litekeel search notes.db articles "reformed covenant" --format jsonl
+```
+
+### 5. Deterministic, Referentially-Intact FERPA/PII Scrubbing (`maskkeel`)
+```bash
+maskkeel scan "$PROD_RO_URL" --schema populi,canvas --init-config mask.toml
+export MASKKEEL_SALT="team-dev-fixture-secret"
+maskkeel mask "$PROD_RO_URL" "$DEV_DB_URL" --config mask.toml --require-salt --schema populi,canvas
+maskkeel verify "$PROD_RO_URL" "$DEV_DB_URL" --config mask.toml --schema populi,canvas
 ```
 
 ---

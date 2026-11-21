@@ -5,7 +5,8 @@ Always pass `--format agent` (or `--format json`) when calling any Keel CLI prog
 | Task | Tool to Use |
 |---|---|
 | Orient on an unfamiliar Postgres or SQLite DB, generate SVG/Mermaid ER docs, discover implicit cross-schema joins, or diff two schema snapshots | **`mapkeel`** (`map`, `edges`, `diff`, `init-contracts`) |
-| Profile CSV/Parquet/JSONL/SQLite/Postgres data, check join cardinality/fan-out/normalization, audit AI-written SQL live, or compare two query results | **`statkeel`** (`profile`, `join`, `audit`, `compare`) |
+| Profile CSV/Parquet/JSONL/SQLite/Postgres data, check join cardinality/fan-out/normalization, audit AI-written SQL live (`--assert`, `--trace-key`), or compare two query results | **`statkeel`** (`profile`, `join`, `audit`, `compare`) |
+| Deterministically scrub FERPA/PII data from CSV, TSV, JSONL, Parquet, SQLite, or PostgreSQL into safe dev fixtures while keeping cross-source joins intact, and verify 0 PII leaks | **`maskkeel`** (`scan`, `mask`, `verify`) |
 | Validate data files/tables against ODCS v3.2.0 or TOML contracts, split quarantine rows, diff contracts, or generate Postgres/Pydantic code | **`datakeel`** (`infer`, `check`, `diff`, `lint`, `codegen`) |
 | Lint SQL files offline for semantic bugs, schema grounding, Postgres migration lock safety, or column-level blast radius | **`sqlkeel`** (`check`, `lineage`, `schema`) |
 | Extract paginated REST APIs into JSONL with incremental watermarks | **`fetchkeel`** (`fetch`, `plan`) |

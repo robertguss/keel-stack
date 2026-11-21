@@ -12,6 +12,7 @@ ALL_TOOLS=(
   mapkeel
   pgkeel
   litekeel
+  maskkeel
 )
 
 METHOD="cargo"
@@ -22,11 +23,11 @@ usage() {
   cat <<'EOF'
 Usage: install.sh [OPTIONS]
 
-Install or verify the 10-tool Rust Keel Data Stack.
+Install or verify the 11-tool Rust Keel Data Stack.
 
 Options:
   --method cargo|wheel   Install via `cargo install --git` (default) or prebuilt GitHub Release wheels (`uv tool install`).
-  --tools t1,t2,...      Comma-separated subset of tools (defaults to all 10).
+  --tools t1,t2,...      Comma-separated subset of tools (defaults to all 11).
   --doctor               Check installed Keel binaries and print versions without installing.
   -h, --help             Show this help message.
 EOF
