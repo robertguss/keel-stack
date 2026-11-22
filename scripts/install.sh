@@ -43,11 +43,21 @@ EOF
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --method)
-      METHOD="${2:-}"
+      if [[ $# -lt 2 || -z "$2" || "$2" == -* ]]; then
+        echo "error: --method requires a value ('cargo' or 'wheel')" >&2
+        usage >&2
+        exit 2
+      fi
+      METHOD="$2"
       shift 2
       ;;
     --tools)
-      TOOLS_CSV="${2:-}"
+      if [[ $# -lt 2 || -z "$2" || "$2" == -* ]]; then
+        echo "error: --tools requires a comma-separated list of Keel tools" >&2
+        usage >&2
+        exit 2
+      fi
+      TOOLS_CSV="$2"
       shift 2
       ;;
     --doctor)
@@ -73,17 +83,43 @@ else
   SELECTED=("${ALL_TOOLS[@]}")
 fi
 
+if [[ "${#SELECTED[@]}" -eq 0 ]]; then
+  echo "error: no Keel tools selected" >&2
+  exit 2
+fi
+
+# Strictly validate every requested tool name against the allowlist before
+# executing any command, cargo install URL, or GitHub release lookup.
+for tool in "${SELECTED[@]}"; do
+  valid=0
+  for allowed in "${ALL_TOOLS[@]}"; do
+    if [[ "$tool" == "$allowed" ]]; then
+      valid=1
+      break
+    fi
+  done
+  if [[ "$valid" -ne 1 ]]; then
+    echo "error: unknown Keel tool '$tool'" >&2
+    exit 2
+  fi
+done
+
 if [[ "$DOCTOR_ONLY" -eq 1 ]]; then
   missing=0
   for tool in "${SELECTED[@]}"; do
     if command -v "$tool" >/dev/null 2>&1; then
-      printf "✓ %-12s %s (%s)\n" "$tool" "$("$tool" --version 2>&1 | head -n1)" "$(command -v "$tool")"
+      ver="$("$tool" --version 2>&1 || true)"
+      ver="${ver%%$'\n'*}"
+      printf "✓ %-12s %s (%s)\n" "$tool" "$ver" "$(command -v "$tool")"
     else
       printf "✖ %-12s NOT INSTALLED\n" "$tool"
       missing=$((missing + 1))
     fi
   done
-  exit "$missing"
+  if [[ "$missing" -eq 0 ]]; then
+    exit 0
+  fi
+  exit 1
 fi
 
 case "$METHOD" in
@@ -101,10 +137,10 @@ case "$METHOD" in
     os="$(uname -s)"
     arch="$(uname -m)"
     case "$os/$arch" in
-      Linux/x86_64)   plat="manylinux2014_x86_64" ;;
-      Linux/aarch64)  plat="manylinux2014_aarch64" ;;
-      Darwin/arm64)   plat="macosx_11_0_arm64" ;;
-      Darwin/x86_64)  plat="macosx_10_12_x86_64" ;;
+      Linux/x86_64)   plat_label="linux-x86_64"; plat_re='manylinux.*_x86_64\.whl$' ;;
+      Linux/aarch64)  plat_label="linux-aarch64"; plat_re='manylinux.*_aarch64\.whl$' ;;
+      Darwin/arm64)   plat_label="macos-arm64"; plat_re='macosx_.*_arm64\.whl$' ;;
+      Darwin/x86_64)  plat_label="macos-x86_64"; plat_re='macosx_.*_x86_64\.whl$' ;;
       *)
         echo "error: unsupported platform $os/$arch for --method wheel; use --method cargo" >&2
         exit 2
@@ -112,10 +148,17 @@ case "$METHOD" in
     esac
 
     for tool in "${SELECTED[@]}"; do
-      echo "==> Installing $tool ($plat wheel)..."
-      url="$(gh release view -R "robertguss/$tool" --json assets --jq ".assets[] | select(.name | contains(\"$plat\")) | .url" | head -n1)"
+      echo "==> Installing $tool ($plat_label wheel)..."
+      if ! url="$(gh release view -R "robertguss/$tool" --json assets --jq "first(.assets[] | select(.name | test(\"$plat_re\")) | .url) // empty")"; then
+        echo "error: failed to query latest GitHub Release for robertguss/$tool" >&2
+        exit 1
+      fi
       if [[ -z "$url" ]]; then
-        echo "error: no $plat wheel found in latest release of robertguss/$tool" >&2
+        echo "error: no $plat_label wheel found in latest release of robertguss/$tool" >&2
+        exit 1
+      fi
+      if [[ "$url" != https://github.com/robertguss/* ]]; then
+        echo "error: unexpected release asset URL for $tool: $url" >&2
         exit 1
       fi
       uv tool install --force "$url"
@@ -131,6 +174,8 @@ echo ""
 echo "Done! Installed Keel Data Stack binaries:"
 for tool in "${SELECTED[@]}"; do
   if command -v "$tool" >/dev/null 2>&1; then
-    printf "  ✓ %-12s %s\n" "$tool" "$("$tool" --version 2>&1 | head -n1)"
+    ver="$("$tool" --version 2>&1 || true)"
+    ver="${ver%%$'\n'*}"
+    printf "  ✓ %-12s %s\n" "$tool" "$ver"
   fi
 done

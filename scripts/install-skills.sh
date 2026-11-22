@@ -1,8 +1,32 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+usage() {
+  cat <<'EOF'
+Usage: install-skills.sh [TARGET_DIR]
+
+Install all bundled Keel Data Stack SKILL.md files into TARGET_DIR
+(default: .agents/skills).
+
+Options:
+  -h, --help   Show this help message.
+EOF
+}
+
+case "${1:-}" in
+  -h|--help)
+    usage
+    exit 0
+    ;;
+  -*)
+    echo "Unknown option: $1" >&2
+    usage >&2
+    exit 2
+    ;;
+esac
+
 TARGET_DIR="${1:-.agents/skills}"
-mkdir -p "$TARGET_DIR"
+mkdir -p -- "$TARGET_DIR"
 
 # Tools whose `skill --install <dir>` creates `<dir>/<tool>/SKILL.md`
 NESTED_TOOLS=(dapkeel statkeel mapkeel pgkeel litekeel auditkeel scorekeel driftkeel evalkeel textkeel feakeel)

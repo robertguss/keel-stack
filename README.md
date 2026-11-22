@@ -43,6 +43,14 @@ flowchart LR
         MSK["maskkeel"]
     end
 
+    subgraph ML["ML Features, Scoring, Drift, Eval & Local NLP"]
+        FTK["feakeel"]
+        SCK["scorekeel"]
+        DRK["driftkeel"]
+        EVK["evalkeel"]
+        TXK["textkeel"]
+    end
+
     RK["runkeel (Parallel DAG Runner)"]
 
     API --> FK --> DTK --> LK --> PG
@@ -53,12 +61,18 @@ flowchart LR
     PG --> MK
     PG --> STK
     PG --> MSK
+    PG --> ADK
+    PG --> FTK --> ADK
+    FTK --> SCK --> DRK
+    SCK --> EVK
+    FILES --> TXK
     SQ --> MK
     SQ --> STK
     SQ --> MSK
     SQK -.-> PG
     RK -.-> Ingest
     RK -.-> Quality
+    RK -.-> ML
 ```
 
 ---
