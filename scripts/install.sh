@@ -137,10 +137,10 @@ case "$METHOD" in
     os="$(uname -s)"
     arch="$(uname -m)"
     case "$os/$arch" in
-      Linux/x86_64)   plat_label="linux-x86_64"; plat_re='manylinux.*_x86_64\.whl$' ;;
-      Linux/aarch64)  plat_label="linux-aarch64"; plat_re='manylinux.*_aarch64\.whl$' ;;
-      Darwin/arm64)   plat_label="macos-arm64"; plat_re='macosx_.*_arm64\.whl$' ;;
-      Darwin/x86_64)  plat_label="macos-x86_64"; plat_re='macosx_.*_x86_64\.whl$' ;;
+      Linux/x86_64)   plat_label="linux-x86_64"; plat_re='manylinux.*_x86_64[.]whl$' ;;
+      Linux/aarch64)  plat_label="linux-aarch64"; plat_re='manylinux.*_aarch64[.]whl$' ;;
+      Darwin/arm64)   plat_label="macos-arm64"; plat_re='macosx_.*_(arm64|universal2)[.]whl$' ;;
+      Darwin/x86_64)  plat_label="macos-x86_64"; plat_re='macosx_.*_(x86_64|universal2)[.]whl$' ;;
       *)
         echo "error: unsupported platform $os/$arch for --method wheel; use --method cargo" >&2
         exit 2
