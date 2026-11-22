@@ -18,6 +18,7 @@ ALL_TOOLS=(
   scorekeel
   driftkeel
   evalkeel
+  textkeel
 )
 
 METHOD="cargo"
@@ -28,11 +29,11 @@ usage() {
   cat <<'EOF'
 Usage: install.sh [OPTIONS]
 
-Install or verify the 16-tool Rust Keel Data Stack.
+Install or verify the 17-tool Rust Keel Data Stack.
 
 Options:
   --method cargo|wheel   Install via `cargo install --git` (default) or prebuilt GitHub Release wheels (`uv tool install`).
-  --tools t1,t2,...      Comma-separated subset of tools (defaults to all 16).
+  --tools t1,t2,...      Comma-separated subset of tools (defaults to all 17).
   --doctor               Check installed Keel binaries and print versions without installing.
   -h, --help             Show this help message.
 EOF

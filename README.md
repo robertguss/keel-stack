@@ -3,7 +3,7 @@
 [![CI](https://github.com/robertguss/keel-stack/actions/workflows/ci.yml/badge.svg)](https://github.com/robertguss/keel-stack/actions/workflows/ci.yml)
 [![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](#license)
 
-**A 16-tool suite of single-binary, blazing-fast Rust CLIs for modern data engineering, proof-carrying SQL auditing, zero-Python ML scoring + TreeSHAP + drift + evaluation, analytics trust, FERPA/PII scrubbing, Excel/spreadsheet workflows, and local-first SQLite/PostgreSQL pipelines — designed from day one for both Humans (DX) and AI Agents (AX).**
+**A 17-tool suite of single-binary, blazing-fast Rust CLIs for modern data engineering, proof-carrying SQL auditing, zero-Python ML scoring + TreeSHAP + drift + evaluation + local NLP, analytics trust, FERPA/PII scrubbing, Excel/spreadsheet workflows, and local-first SQLite/PostgreSQL pipelines — designed from day one for both Humans (DX) and AI Agents (AX).**
 
 Zero JVM. Zero Common Lisp. Zero bloated Python ETL dependency trees. Every tool ships as a native binary (plus prebuilt cross-platform Python wheels on GitHub Releases) with identical ergonomics, exit codes, and a bundled `SKILL.md`.
 
@@ -63,7 +63,7 @@ flowchart LR
 
 ---
 
-## The 16 Tools
+## The 17 Tools
 
 | # | Tool | Replaces / Role | Key Commands | Repository |
 |---:|---|---|---|---|
@@ -83,6 +83,7 @@ flowchart LR
 | 14 | **`scorekeel`** | Zero-Python Pure-Rust LightGBM Scorer & Exact Lundberg TreeSHAP Explainer for CSV, JSONL, Parquet & HTTP sidecars | `inspect`, `score`, `serve`, `bench`, `skill` | [robertguss/scorekeel](https://github.com/robertguss/scorekeel) |
 | 15 | **`driftkeel`** | Zero-Python Production ML Feature, Prediction & Concept Drift Monitor (PSI, KS, Jensen-Shannon, missingness spikes, calibration ECE & HTML receipts) | `snapshot`, `check`, `skill` | [robertguss/driftkeel](https://github.com/robertguss/driftkeel) |
 | 16 | **`evalkeel`** | Model-Agnostic ML Backtest, Calibration, Conformal Coverage, Subgroup Fairness Parity & Tamper-Evident HTML Model Card Engine | `binary`, `regress`, `skill` | [robertguss/evalkeel](https://github.com/robertguss/evalkeel) |
+| 17 | **`textkeel`** | Zero-Python, Zero-PII Local Rust TF-IDF (1,2)-Gram + Multinomial Logistic Text Classifier with Phrase Attribution & Offline Browser Playground Export | `train`, `classify`, `export-browser`, `skill` | [robertguss/textkeel](https://github.com/robertguss/textkeel) |
 
 ---
 
