@@ -3,7 +3,7 @@
 [![CI](https://github.com/robertguss/keel-stack/actions/workflows/ci.yml/badge.svg)](https://github.com/robertguss/keel-stack/actions/workflows/ci.yml)
 [![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](#license)
 
-**A 17-tool suite of single-binary, blazing-fast Rust CLIs for modern data engineering, proof-carrying SQL auditing, zero-Python ML scoring + TreeSHAP + drift + evaluation + local NLP, analytics trust, FERPA/PII scrubbing, Excel/spreadsheet workflows, and local-first SQLite/PostgreSQL pipelines — designed from day one for both Humans (DX) and AI Agents (AX).**
+**An 18-tool suite of single-binary, blazing-fast Rust CLIs for modern data engineering, proof-carrying SQL auditing, leak-free point-in-time feature stores, zero-Python ML scoring + TreeSHAP + drift + evaluation + local NLP, analytics trust, FERPA/PII scrubbing, Excel/spreadsheet workflows, and local-first SQLite/PostgreSQL pipelines — designed from day one for both Humans (DX) and AI Agents (AX).**
 
 Zero JVM. Zero Common Lisp. Zero bloated Python ETL dependency trees. Every tool ships as a native binary (plus prebuilt cross-platform Python wheels on GitHub Releases) with identical ergonomics, exit codes, and a bundled `SKILL.md`.
 
@@ -63,7 +63,7 @@ flowchart LR
 
 ---
 
-## The 17 Tools
+## The 18 Tools
 
 | # | Tool | Replaces / Role | Key Commands | Repository |
 |---:|---|---|---|---|
@@ -84,6 +84,7 @@ flowchart LR
 | 15 | **`driftkeel`** | Zero-Python Production ML Feature, Prediction & Concept Drift Monitor (PSI, KS, Jensen-Shannon, missingness spikes, calibration ECE & HTML receipts) | `snapshot`, `check`, `skill` | [robertguss/driftkeel](https://github.com/robertguss/driftkeel) |
 | 16 | **`evalkeel`** | Model-Agnostic ML Backtest, Calibration, Conformal Coverage, Subgroup Fairness Parity & Tamper-Evident HTML Model Card Engine | `binary`, `regress`, `skill` | [robertguss/evalkeel](https://github.com/robertguss/evalkeel) |
 | 17 | **`textkeel`** | Zero-Python, Zero-PII Local Rust TF-IDF (1,2)-Gram + Multinomial Logistic Text Classifier with Phrase Attribution & Offline Browser Playground Export | `train`, `classify`, `export-browser`, `skill` | [robertguss/textkeel](https://github.com/robertguss/textkeel) |
+| 18 | **`feakeel`** | Leak-Free Point-in-Time ML Feature Store Compiler & Static Temporal Leakage Linter for PostgreSQL `LATERAL` Queries | `init`, `validate`, `compile`, `run`, `skill` | [robertguss/feakeel](https://github.com/robertguss/feakeel) |
 
 ---
 
@@ -102,7 +103,7 @@ Every tool in the Keel Data Stack follows the same predictable contract:
 
 ## Quick Install
 
-### Install all 12 tools from GitHub Releases (prebuilt wheels via `uv` — no Rust compiler needed)
+### Install all 18 tools from GitHub Releases (prebuilt wheels via `uv` — no Rust compiler needed)
 ```bash
 git clone https://github.com/robertguss/keel-stack
 cd keel-stack
@@ -120,7 +121,7 @@ cd keel-stack
 ./scripts/install.sh --doctor
 ```
 
-### Install all 12 AI Agent `SKILL.md` files into any repo
+### Install all 18 AI Agent `SKILL.md` files into any repo
 ```bash
 ./scripts/install-skills.sh /path/to/your-repo/.agents/skills
 ```
@@ -178,6 +179,28 @@ maskkeel scan "$PROD_RO_URL" --schema populi,canvas --init-config mask.toml
 export MASKKEEL_SALT="team-dev-fixture-secret"
 maskkeel mask "$PROD_RO_URL" "$DEV_DB_URL" --config mask.toml --require-salt --schema populi,canvas
 maskkeel verify "$PROD_RO_URL" "$DEV_DB_URL" --config mask.toml --schema populi,canvas
+```
+
+### 6. Zero-Python Production ML Lifecycle (`feakeel` + `auditkeel` + `scorekeel` + `driftkeel` + `evalkeel` + `textkeel`)
+```bash
+# 1. Lint & compile leak-free point-in-time Postgres LATERAL features + auditkeel rules
+feakeel validate features.toml --format agent
+feakeel compile features.toml --mode live --out panel.sql --emit-audit-rules audit.toml
+auditkeel run panel.sql --dsn "$PROD_RO_URL" --key student_id,term_id --format agent
+feakeel run features.toml --dsn "$PROD_RO_URL" --mode live --out live_batch.jsonl
+
+# 2. Check live feature & prediction drift before scoring (exit 1 on shift)
+driftkeel check baseline.json live_batch.jsonl --html drift_receipt.html
+
+# 3. Score LightGBM models with exact Lundberg TreeSHAP in pure Rust (or HTTP sidecar)
+scorekeel score retention_lgbm.txt live_batch.jsonl --shap --top-k 3 --out scored.jsonl
+scorekeel serve retention_lgbm.txt --bind 127.0.0.1:8080 --shap
+
+# 4. Evaluate calibration, Top-K lift, conformal coverage & subgroup fairness
+evalkeel binary oof_preds.parquet --y had_dfw --p risk_prob --group program --html model_card.html
+
+# 5. Zero-PII local text classification & offline browser playground export
+textkeel train notes.csv --text note_text --label category --out notes.tk.json --export-browser playground.html
 ```
 
 ---
